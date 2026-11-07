@@ -33,3 +33,10 @@ The trade-off is freshness: if a process changes its hostname at runtime (rare),
 `socket.gethostname` can raise `OSError` on misconfigured systems. Rather than propagating the failure and crashing the host application, the provider records the sentinel string `"<unknown>"` for `hostname`. Log consumers should handle that sentinel gracefully.
 
 The frozen mapping returned by `.metadata` is a `types.MappingProxyType`. Some serializers (notably older JSON encoders) do not traverse proxy objects transparently; use `.as_dict()` when you need a plain `dict`.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
